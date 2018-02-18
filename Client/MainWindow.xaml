@@ -15,18 +15,18 @@
             <ColumnDefinition Width="3*"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <ScrollViewer Grid.Column="0">
-            <StackPanel Orientation="Vertical">
-                <DockPanel HorizontalAlignment="Stretch">
-                    <TextBlock Text="Load Image..."/>
-                    <Button Command="{Binding LoadImageCommand}" DockPanel.Dock="Right" Content="..." Width="20" HorizontalAlignment="Right"/>
-                </DockPanel>
-                <Image Source="{Binding Bitmap, Converter={StaticResource bitmapToImageSourceConv}}" />
-            </StackPanel>
-        </ScrollViewer>
-        <StackPanel Grid.Column="1" Orientation="Vertical">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="20*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="{Binding Path}" VerticalAlignment="Top"/>
+        <Button Command="{Binding LoadImageCommand}" Content="..." Width="20" VerticalAlignment="Top" HorizontalAlignment="Right"/>
+        <Image Grid.Row="1" Source="{Binding Bitmap, Converter={StaticResource bitmapToImageSourceConv}}"
+                       Stretch="Uniform"/>
+        <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Vertical">
             <Expander IsExpanded="True" Header="Shape Detection: " Margin="5,5,5,5">
-                <CheckBox Command="{Binding TriangleDetectionCommand}" IsChecked="{Binding IsTriangleDetecionChecked}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
+                <CheckBox Command="{Binding TriangleDetectionCommand}" IsChecked="{Binding IsTriangleDetecionChecked}" 
+                          CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
                           Content="Triangle Detection" Margin="10,5,5,5"/>
             </Expander>
         </StackPanel>

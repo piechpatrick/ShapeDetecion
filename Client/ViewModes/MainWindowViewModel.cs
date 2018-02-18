@@ -51,6 +51,19 @@ namespace Client.ViewModes
             }
         }
 
+        private string _path = "Load image...";
+        public string Path
+        {
+            get
+            {
+                return _path;
+            }
+            set
+            {
+                SetProperty(ref _path, value);
+            }
+        }
+
 
         public MainWindowViewModel()
         {
@@ -66,6 +79,8 @@ namespace Client.ViewModes
             {
                 _picture = new Picture(openFileDialog.FileName);
                 Bitmap = _picture.Bitmap;
+                Path = openFileDialog.FileName;
+                IsTriangleDetecionChecked = false;
             }
             _triangleDetectionCommand.RaiseCanExecuteChanged();
         }
