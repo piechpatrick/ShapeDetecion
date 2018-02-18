@@ -51,18 +51,38 @@ namespace Client
                     }
                 }
             }
-            foreach (var triangle in _triangleList)
+
+            var sortedTriangle = _triangleList.OrderBy(t => t.Area).ToList();          
+            if(sortedTriangle.Count >= 3)
             {
-                var listX = new List<float>();
-                listX.Add(triangle.V0.X);
-                listX.Add(triangle.V1.X);
-                listX.Add(triangle.V2.X);
-                var min = listX.Min();
-                var max = listX.Max();
-                var height = max - min + 15;
-                CvInvoke.Circle(_image, new Point((int)triangle.Centeroid.X, (int)triangle.Centeroid.Y),(int)height/2, new Bgr(Color.Red).MCvScalar, 1);
-            }
+                sortedTriangle.Reverse();
+                var tooked3 = sortedTriangle.Take(3);
+                int idx = 1;
+                foreach (var triangle in tooked3)
+                {
+                    CvInvoke.Circle(_image, new Point((int)triangle.Centeroid.X, (int)triangle.Centeroid.Y), 
+                        GetDiameter(triangle) / 2, new Bgr(Color.Red).MCvScalar, 1);
+
+                    CvInvoke.PutText(_image, idx.ToString(), new Point((int)triangle.Centeroid.X, (int)triangle.Centeroid.Y),
+                        FontFace.HersheyComplex, 1, new Bgr(255,0,0).MCvScalar,2);
+                    idx++;
+                }
+            }          
         }
+
+        private int GetDiameter(Triangle2DF triangle2DF)
+        {
+            var listX = new List<float>();
+            listX.Add(triangle2DF.V0.X);
+            listX.Add(triangle2DF.V1.X);
+            listX.Add(triangle2DF.V2.X);
+            var min = listX.Min();
+            var max = listX.Max();
+            return (int)(max - min + 15);
+        }
+
+        
+
 
     }
 }
