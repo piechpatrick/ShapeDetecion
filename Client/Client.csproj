@@ -36,10 +36,11 @@
   <ItemGroup>
     <Reference Include="Emgu.CV.UI, Version=3.3.0.2824, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\Emgu.CV.UI.dll</HintPath>
+      <HintPath>Assemblies\Emgu.CV.UI.dll</HintPath>
     </Reference>
-    <Reference Include="Emgu.CV.World">
-      <HintPath>E:\EMGU\bin\Emgu.CV.World.dll</HintPath>
+    <Reference Include="Emgu.CV.World, Version=3.3.0.2824, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Assemblies\Emgu.CV.World.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -111,8 +112,12 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="Assemblies\concrt140.dll" />
-    <Content Include="Assemblies\cvextern.dll" />
+    <Content Include="Assemblies\concrt140.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assemblies\cvextern.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assemblies\Emgu.CV.DebuggerVisualizers.VS2012.dll" />
     <Content Include="Assemblies\Emgu.CV.DebuggerVisualizers.VS2013.dll" />
     <Content Include="Assemblies\Emgu.CV.DebuggerVisualizers.VS2015.dll" />
@@ -124,6 +129,10 @@
     <Content Include="Assemblies\opencv_ffmpeg330.dll" />
     <Content Include="Assemblies\opencv_ffmpeg330_64.dll" />
     <Content Include="Assemblies\vcruntime140.dll" />
+    <Resource Include="Photos\1.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /y /d  "$(ProjectDir)Assemblies\*.dll" "$(ProjectDir)$(OutDir)"</PostBuildEvent>
+  </PropertyGroup>
 </Project>
