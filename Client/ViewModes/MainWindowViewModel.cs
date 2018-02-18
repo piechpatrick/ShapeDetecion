@@ -71,34 +71,38 @@ namespace Client.ViewModes
             _triangleDetectionCommand = new RelayCommand(TriangleDetection, CanTriangleDetect);
         }
 
-        private void LoadImage(object ob)
+        private async void LoadImage(object ob)
         {
-            Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
-            openFileDialog.Filter = "PNG Files (*.png)|*.png|JPEG Files (*.jpeg)|*.jpeg|JPG Files (*.jpg)|";
-            if (openFileDialog.ShowDialog() == true && openFileDialog.CheckPathExists)
+            var task = Task.Factory.StartNew(() =>
             {
-                _picture = new Picture(openFileDialog.FileName);
-                Bitmap = _picture.Bitmap;
-                Path = openFileDialog.FileName;
-                IsTriangleDetecionChecked = false;
-            }
-            _triangleDetectionCommand.RaiseCanExecuteChanged();
+                Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
+                openFileDialog.Filter = "PNG Files (*.png)|*.png|JPEG Files (*.jpeg)|*.jpeg|JPG Files (*.jpg)|";
+                if (openFileDialog.ShowDialog() == true && openFileDialog.CheckPathExists)
+                {
+                    _picture = new Picture(openFileDialog.FileName);
+                    Bitmap = _picture.Bitmap;
+                    Path = openFileDialog.FileName;
+                    IsTriangleDetecionChecked = false;
+                }
+                _triangleDetectionCommand.RaiseCanExecuteChanged();
+            });
+            await task;
         }
         private bool CanLoadImage(object ob)
         {
             return true;
         }
 
-        private void TriangleDetection(object ob)
+        private async void TriangleDetection(object ob)
         {
             if(IsTriangleDetecionChecked)
             {
-                var task = Task.Run(() =>
+                var task = Task.Factory.StartNew(() =>
                 {
                     _triangleDeteciton = new TriangleDetection(_picture);
                     _triangleDeteciton.Detect();
                 });
-                task.Wait();
+                await task;
                 Bitmap = _triangleDeteciton.OriginalBitmap;
             }
             else
