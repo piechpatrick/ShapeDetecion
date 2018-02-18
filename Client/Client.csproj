@@ -110,5 +110,20 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Content Include="Assemblies\concrt140.dll" />
+    <Content Include="Assemblies\cvextern.dll" />
+    <Content Include="Assemblies\Emgu.CV.DebuggerVisualizers.VS2012.dll" />
+    <Content Include="Assemblies\Emgu.CV.DebuggerVisualizers.VS2013.dll" />
+    <Content Include="Assemblies\Emgu.CV.DebuggerVisualizers.VS2015.dll" />
+    <Content Include="Assemblies\Emgu.CV.DebuggerVisualizers.VS2017.dll" />
+    <Content Include="Assemblies\Emgu.CV.UI.dll" />
+    <Content Include="Assemblies\Emgu.CV.UI.GL.dll" />
+    <Content Include="Assemblies\Emgu.CV.World.dll" />
+    <Content Include="Assemblies\msvcp140.dll" />
+    <Content Include="Assemblies\opencv_ffmpeg330.dll" />
+    <Content Include="Assemblies\opencv_ffmpeg330_64.dll" />
+    <Content Include="Assemblies\vcruntime140.dll" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
