@@ -1,0 +1,34 @@
+﻿<Window x:Class="Client.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Client"
+        xmlns:conv="clr-namespace:Client.Convertres"
+        mc:Ignorable="d"
+        Title="Shape Detection" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <conv:BitmapToImageSourceConverter x:Key="bitmapToImageSourceConv"/>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <ScrollViewer Grid.Column="0">
+            <StackPanel Orientation="Vertical">
+                <DockPanel HorizontalAlignment="Stretch">
+                    <TextBlock Text="Load Image..."/>
+                    <Button Command="{Binding LoadImageCommand}" DockPanel.Dock="Right" Content="..." Width="20" HorizontalAlignment="Right"/>
+                </DockPanel>
+                <Image Source="{Binding Bitmap, Converter={StaticResource bitmapToImageSourceConv}}" />
+            </StackPanel>
+        </ScrollViewer>
+        <StackPanel Grid.Column="1" Orientation="Vertical">
+            <Expander IsExpanded="True" Header="Shape Detection: " Margin="5,5,5,5">
+                <CheckBox Command="{Binding TriangleDetectionCommand}" IsChecked="{Binding IsTriangleDetecionChecked}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
+                          Content="Triangle Detection" Margin="10,5,5,5"/>
+            </Expander>
+        </StackPanel>
+    </Grid>
+</Window>
