@@ -24,7 +24,21 @@ namespace Client
         public override void Detect()
         {
             UMat cannyEdges = new UMat();
-            CvInvoke.Canny(_image, cannyEdges, 50, 150);
+
+            //Convert the image to grayscale and filter out the noise
+            UMat uimage = new UMat();
+            CvInvoke.CvtColor(_image, cannyEdges, ColorConversion.Bgr2Gray);
+
+
+            //use image pyr to remove noise
+            UMat pyrDown = new UMat();
+            CvInvoke.PyrDown(cannyEdges, pyrDown);
+            CvInvoke.PyrUp(pyrDown, cannyEdges);
+
+            CvInvoke.Canny(_image, cannyEdges, 80, 50);
+
+            _customImage.Bitmap = cannyEdges.Bitmap;
+
 
             using (VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint())
             {
@@ -67,7 +81,14 @@ namespace Client
                         FontFace.HersheyComplex, 1, new Bgr(255,0,0).MCvScalar,2);
                     idx++;
                 }
-            }          
+            }
+
+            foreach (var triangle in _triangleList)
+            {
+                CvInvoke.Circle(_customImage, new Point((int)triangle.Centeroid.X, (int)triangle.Centeroid.Y),
+                        GetDiameter(triangle) / 2, new Bgr(Color.Red).MCvScalar, 1);
+            }
+
         }
 
         private int GetDiameter(Triangle2DF triangle2DF)

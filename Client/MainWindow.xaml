@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Client"
         xmlns:conv="clr-namespace:Client.Convertres"
         mc:Ignorable="d"
-        Title="Shape Detection" WindowStartupLocation="CenterScreen">
+        Title="Shape Detection" WindowStartupLocation="CenterScreen" WindowState="Maximized">
     <Window.Resources>
         <conv:BitmapToImageSourceConverter x:Key="bitmapToImageSourceConv"/>
     </Window.Resources>
@@ -18,10 +18,15 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="20*"/>
+            <RowDefinition/>
+            <RowDefinition Height="20*"/>
         </Grid.RowDefinitions>
         <TextBlock Text="{Binding Path}" VerticalAlignment="Top"/>
         <Button Command="{Binding LoadImageCommand}" Content="..." Width="20" VerticalAlignment="Top" HorizontalAlignment="Right"/>
         <Image Grid.Row="1" Source="{Binding Bitmap, Converter={StaticResource bitmapToImageSourceConv}}"
+                       Stretch="Uniform"/>
+        <TextBlock Grid.Row="2" Text="Pre processed: " />
+        <Image Grid.Row="3" Source="{Binding PreBitmap, Converter={StaticResource bitmapToImageSourceConv}}"
                        Stretch="Uniform"/>
         <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Vertical">
             <Expander IsExpanded="True" Header="Shape Detection: " Margin="5,5,5,5">

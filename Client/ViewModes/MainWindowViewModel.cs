@@ -38,6 +38,20 @@ namespace Client.ViewModes
             }
         }
 
+        private Bitmap _prebitmap;
+        public Bitmap PreBitmap
+        {
+            get
+            {
+                return _prebitmap;
+            }
+            set
+            {
+                SetProperty(ref _prebitmap, value);
+            }
+        }
+
+
         private bool _isTriangleDetetcionChecked;
         public bool IsTriangleDetecionChecked
         {
@@ -104,6 +118,7 @@ namespace Client.ViewModes
                 });
                 await task;
                 Bitmap = _triangleDeteciton.OriginalBitmap;
+                PreBitmap = _triangleDeteciton.CustomImage;
             }
             else
             {

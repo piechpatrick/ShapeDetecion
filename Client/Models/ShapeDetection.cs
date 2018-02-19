@@ -11,7 +11,7 @@ namespace Client
     {
         protected Image<Bgr, Byte> _image;
 
-        protected Image<Gray, Byte> _customImage;
+        protected Image<Bgr, Byte> _customImage;
 
         public Bitmap OriginalBitmap
         {
@@ -21,14 +21,15 @@ namespace Client
         public Bitmap CustomImage
         {
             get { return _customImage.Bitmap; }
+            set { _customImage.Bitmap = value; }
         }
 
         public ShapeDetection(IPicture picture)
         {
             _image = new Image<Bgr, byte>(picture.Bitmap)
-                .Resize(800, 600, Emgu.CV.CvEnum.Inter.Linear, true);
-            _customImage = new Image<Gray, byte>(picture.Bitmap)
-                .Resize(800, 600, Emgu.CV.CvEnum.Inter.Linear, true);
+            .Resize(800, 600, Emgu.CV.CvEnum.Inter.Linear, true);
+            _customImage = new Image<Bgr, byte>(picture.Bitmap)
+               .Resize(800, 600, Emgu.CV.CvEnum.Inter.Linear, true);
         }
 
 
