@@ -23,23 +23,22 @@ namespace Client
 
         public override void Detect()
         {
-            UMat cannyEdges = new UMat();
+            //pre-process image 
 
-            //Convert the image to grayscale and filter out the noise
-            UMat uimage = new UMat();
+            UMat cannyEdges = new UMat();
             CvInvoke.CvtColor(_image, cannyEdges, ColorConversion.Bgr2Gray);
 
-
-            //use image pyr to remove noise
             UMat pyrDown = new UMat();
+
             CvInvoke.PyrDown(cannyEdges, pyrDown);
             CvInvoke.PyrUp(pyrDown, cannyEdges);
-
             CvInvoke.Canny(_image, cannyEdges, 80, 50);
 
+            //assign pre-processed image as customImage
             _customImage.Bitmap = cannyEdges.Bitmap;
 
 
+            //find triangles logic 
             using (VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint())
             {
                 CvInvoke.FindContours(cannyEdges, contours, null, RetrType.List, ChainApproxMethod.ChainApproxSimple);
@@ -50,7 +49,7 @@ namespace Client
                     using (VectorOfPoint approxContour = new VectorOfPoint())
                     {
                         CvInvoke.ApproxPolyDP(contour, approxContour, CvInvoke.ArcLength(contour, true) * 0.05, true);
-                        if (CvInvoke.ContourArea(approxContour, false) > 1)
+                        if (CvInvoke.ContourArea(approxContour, false) > 20)
                         {
                             if (approxContour.Size == 3) 
                             {
@@ -65,12 +64,21 @@ namespace Client
                     }
                 }
             }
-
-            var sortedTriangle = _triangleList.OrderBy(t => t.Area).ToList();          
-            if(sortedTriangle.Count >= 3)
+            // Order by Area
+            var sortedTriangle = _triangleList.OrderBy(t => t.Area).ToList();
+            sortedTriangle.Reverse();
+            if (sortedTriangle.Count >= 3)
             {
-                sortedTriangle.Reverse();
-                var tooked3 = sortedTriangle.Take(3);
+                //undupe by precision to an integer
+                //TO DO: is it possible to more equitable unduping?!
+                var undpued = from t in sortedTriangle
+                              group t by (int)(t.Centeroid.X + t.Centeroid.Y) into g
+                              select g.First();
+              
+                //take 3 largest as part of bussiness logic 
+                var tooked3 = undpued.Take(3);
+
+                //draw circle and mark sign 3 largest 
                 int idx = 1;
                 foreach (var triangle in tooked3)
                 {
@@ -83,6 +91,7 @@ namespace Client
                 }
             }
 
+            // draw circle on all triangles at customImage
             foreach (var triangle in _triangleList)
             {
                 CvInvoke.Circle(_customImage, new Point((int)triangle.Centeroid.X, (int)triangle.Centeroid.Y),
@@ -100,10 +109,9 @@ namespace Client
             var min = listX.Min();
             var max = listX.Max();
             return (int)(max - min + 15);
-        }
-
+        }    
         
 
-
+       
     }
 }
