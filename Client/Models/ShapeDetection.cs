@@ -27,9 +27,9 @@ namespace Client
         public ShapeDetection(IPicture picture)
         {
             _image = new Image<Bgr, byte>(picture.Bitmap)
-            .Resize(800, 500, Emgu.CV.CvEnum.Inter.Linear, true);
+            .Resize(650, 550, Emgu.CV.CvEnum.Inter.Linear, true);
             _customImage = new Image<Bgr, byte>(picture.Bitmap)
-               .Resize(800, 500, Emgu.CV.CvEnum.Inter.Linear, true);
+               .Resize(650, 550, Emgu.CV.CvEnum.Inter.Linear, true);
         }
 
 

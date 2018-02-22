@@ -15,7 +15,7 @@ namespace Client
     public class TriangleDetection : ShapeDetection
     {
 
-        private List<Triangle2DF> _triangleList = new List<Triangle2DF>();
+        //private List<Triangle2DF> _triangleList = new List<Triangle2DF>();
 
         public TriangleDetection(IPicture picture)
             :base(picture)
@@ -38,34 +38,8 @@ namespace Client
             _customImage.Bitmap = cannyEdges.Bitmap;
 
 
-            //find triangles logic 
-            using (VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint())
-            {
-                CvInvoke.FindContours(cannyEdges, contours, null, RetrType.List, ChainApproxMethod.ChainApproxSimple);
-                int count = contours.Size;
-                for (int i = 0; i < count; i++)
-                {
-                    using (VectorOfPoint contour = contours[i])
-                    using (VectorOfPoint approxContour = new VectorOfPoint())
-                    {
-                        CvInvoke.ApproxPolyDP(contour, approxContour, CvInvoke.ArcLength(contour, true) * 0.05, true);
-                        if (CvInvoke.ContourArea(approxContour, false) > 20)
-                        {
-                            if (approxContour.Size == 3) 
-                            {
-                                Point[] pts = approxContour.ToArray();
-                                _triangleList.Add(new Triangle2DF(
-                                   pts[0],
-                                   pts[1],
-                                   pts[2]
-                                   ));
-                            }
-                        }
-                    }
-                }
-            }
             // Order by Area
-            var sortedTriangle = _triangleList.OrderBy(t => t.Area).ToList();
+            var sortedTriangle = GetTraingles(cannyEdges).OrderBy(t => t.Area).ToList();
             sortedTriangle.Reverse();
             if (sortedTriangle.Count >= 3)
             {
@@ -92,12 +66,111 @@ namespace Client
             }
 
             // draw circle on all triangles at customImage
-            foreach (var triangle in _triangleList)
+            foreach (var triangle in sortedTriangle)
             {
                 CvInvoke.Circle(_customImage, new Point((int)triangle.Centeroid.X, (int)triangle.Centeroid.Y),
                         GetDiameter(triangle) / 2, new Bgr(Color.Red).MCvScalar, 1);
             }
 
+        }
+
+        public void Detect(ColorParam color)
+        {
+            Image<Bgr, byte> img = new Image<Bgr, byte>(_image.Bitmap);
+            var image = img.InRange(new Bgr(Convert.ToDouble(color.BlueValue),
+                Convert.ToDouble(color.GreenValue),
+                Convert.ToDouble(color.RedValue)), 
+                new Bgr(
+                    Convert.ToDouble(color.BlueValue),
+                    Convert.ToDouble(color.GreenValue),
+                    Convert.ToDouble(color.RedValue)));
+
+            UMat cannyEdges = new UMat();
+
+            foreach (var gray in image.Split())
+            {
+                CvInvoke.Canny(image, cannyEdges, 80, 160);
+            }
+
+            //UMat pyrDown = new UMat();
+            //CvInvoke.PyrDown(image, pyrDown);
+            //CvInvoke.PyrUp(pyrDown, cannyEdges);
+
+            _customImage.Bitmap = cannyEdges.Bitmap;
+
+            var sortedTriangles = GetTraingles(cannyEdges).OrderBy(t => t.Area).ToList();
+            sortedTriangles.Reverse();
+
+            var undpued = from t in sortedTriangles
+                          group t by (int)(t.Centeroid.X + t.Centeroid.Y) into g
+                          select g.First();
+
+            if (undpued.Count() >= 3)
+            {
+                var tooked3 = undpued.Take(3);
+
+
+                // draw circle on all triangles at customImage
+                int idx = 1;
+                foreach (var triangle in tooked3)
+                {
+                    CvInvoke.Circle(_customImage, new Point((int)triangle.Centeroid.X, (int)triangle.Centeroid.Y),
+                            GetDiameter(triangle) / 2, new Bgr(Color.Red).MCvScalar, 1);
+
+                    CvInvoke.Circle(_image, new Point((int)triangle.Centeroid.X, (int)triangle.Centeroid.Y),
+                            GetDiameter(triangle) / 2, new Bgr(Color.Red).MCvScalar, 1);
+
+                    CvInvoke.PutText(_customImage, idx.ToString(), new Point((int)triangle.Centeroid.X, (int)triangle.Centeroid.Y),
+                            FontFace.HersheyComplex, 1, new Bgr(0, 0, 255).MCvScalar, 2);
+
+
+                    CvInvoke.PutText(_image, idx.ToString(), new Point((int)triangle.Centeroid.X, (int)triangle.Centeroid.Y),
+                            FontFace.HersheyComplex, 1, new Bgr(0, 0, 255).MCvScalar, 2);
+
+                    idx++;
+                }
+
+                foreach (var triangle in undpued)
+                {
+                    CvInvoke.Circle(_customImage, new Point((int)triangle.Centeroid.X, (int)triangle.Centeroid.Y),
+                    GetDiameter(triangle) / 2, new Bgr(Color.Red).MCvScalar, 1);
+                }
+            }
+
+        }
+
+        private List<Triangle2DF> GetTraingles(UMat cannyEdges)
+        {
+            //find triangles logic 
+
+            List<Triangle2DF> _triangleList = new List<Triangle2DF>();
+
+            using (VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint())
+            {
+                CvInvoke.FindContours(cannyEdges, contours, null, RetrType.List, ChainApproxMethod.ChainApproxSimple);
+                int count = contours.Size;
+                for (int i = 0; i < count; i++)
+                {
+                    using (VectorOfPoint contour = contours[i])
+                    using (VectorOfPoint approxContour = new VectorOfPoint())
+                    {
+                        CvInvoke.ApproxPolyDP(contour, approxContour, CvInvoke.ArcLength(contour, true) * 0.04, true);
+                        if (CvInvoke.ContourArea(approxContour, false) > 1)
+                        {
+                            if (approxContour.Size < 7)
+                            {
+                                Point[] pts = approxContour.ToArray();
+                                _triangleList.Add(new Triangle2DF(
+                                   pts[0],
+                                   pts[1],
+                                   pts[2]
+                                   ));
+                            }
+                        }
+                    }
+                }
+            }
+            return _triangleList;
         }
 
         private int GetDiameter(Triangle2DF triangle2DF)

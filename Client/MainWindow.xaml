@@ -30,9 +30,27 @@
                        Stretch="Uniform"/>
         <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Vertical">
             <Expander IsExpanded="True" Header="Shape Detection: " Margin="5,5,5,5">
-                <CheckBox Command="{Binding TriangleDetectionCommand}" IsChecked="{Binding IsTriangleDetecionChecked}" 
+                <StackPanel>
+                    <!--<CheckBox Command="{Binding TriangleDetectionCommand}" IsChecked="{Binding IsTriangleDetecionChecked}" 
                           CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
-                          Content="Triangle Detection" Margin="10,5,5,5"/>
+                          Content="Triangle Detection" Margin="10,5,5,5"/>-->
+                    <CheckBox Command="{Binding SpecificColorTriangleDetectionCommand}" IsChecked="{Binding IsSpecificColorTriangleDetecionChecked}"
+                              Content="Specific Color Triangle Detecion" Margin="10,5,5,5"/>
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel>
+                            <Label Content="Red" Margin="15,0,0,0"/>
+                            <TextBox MaxLength="3" Width="35" Text="{Binding ColorParam.RedValue}" Margin="15,5,5,5" PreviewTextInput="TextBox_PreviewTextInput"/>
+                        </StackPanel>
+                        <StackPanel>
+                            <Label Content="Green" Margin="15,0,0,0"/>
+                            <TextBox MaxLength="3" Width="35" Text="{Binding ColorParam.GreenValue}" Margin="15,5,5,5" PreviewTextInput="TextBox_PreviewTextInput"/>
+                        </StackPanel>
+                        <StackPanel>
+                            <Label Content="Blue" Margin="15,0,0,0"/>
+                            <TextBox MaxLength="3" Width="35" Text="{Binding ColorParam.BlueValue}" Margin="15,5,5,5" PreviewTextInput="TextBox_PreviewTextInput"/>
+                        </StackPanel>
+                        </StackPanel>
+                </StackPanel>
             </Expander>
         </StackPanel>
     </Grid>

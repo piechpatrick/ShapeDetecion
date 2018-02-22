@@ -16,6 +16,7 @@ namespace Client.ViewModes
 
         private RelayCommand _loadImageCommand;
         private RelayCommand _triangleDetectionCommand;
+        private RelayCommand _specificColorTriangleDetectionCommad;
 
         private TriangleDetection _triangleDeteciton;
 
@@ -24,6 +25,7 @@ namespace Client.ViewModes
 
         public ICommand LoadImageCommand { get { return _loadImageCommand; } }
         public ICommand TriangleDetectionCommand { get { return _triangleDetectionCommand; } }
+        public ICommand SpecificColorTriangleDetectionCommand { get { return _specificColorTriangleDetectionCommad; } }
 
         private Bitmap _bitmap;
         public Bitmap Bitmap
@@ -65,6 +67,33 @@ namespace Client.ViewModes
             }
         }
 
+        private bool _isSpecificColorTriangleDetecionChecked;
+        public bool IsSpecificColorTriangleDetecionChecked
+        {
+            get
+            {
+                return _isSpecificColorTriangleDetecionChecked;
+            }
+            set
+            {
+                SetProperty(ref _isSpecificColorTriangleDetecionChecked, value);
+            }
+        }
+
+        private ColorParam _colorParam = new ColorParam();
+        public ColorParam ColorParam
+        {
+            get
+            {
+                return _colorParam;
+            }
+            set
+            {
+                SetProperty(ref _colorParam, value);
+            }
+        }
+
+
         private string _path = "Load image...";
         public string Path
         {
@@ -83,6 +112,7 @@ namespace Client.ViewModes
         {
             _loadImageCommand = new RelayCommand(LoadImage, CanLoadImage);
             _triangleDetectionCommand = new RelayCommand(TriangleDetection, CanTriangleDetect);
+            _specificColorTriangleDetectionCommad = new RelayCommand(SpecificColorTriangleDetection, CanTriangleDetect);
         }
 
         private async void LoadImage(object ob)
@@ -99,6 +129,7 @@ namespace Client.ViewModes
                     IsTriangleDetecionChecked = false;
                 }
                 _triangleDetectionCommand.RaiseCanExecuteChanged();
+                _specificColorTriangleDetectionCommad.RaiseCanExecuteChanged();
             });
             await task;
         }
@@ -128,6 +159,30 @@ namespace Client.ViewModes
                 });
             }
         }
+
+        private async void SpecificColorTriangleDetection(object ob)
+        {
+            if (IsSpecificColorTriangleDetecionChecked)
+            {
+                var task = Task.Factory.StartNew(() =>
+                {
+                    _triangleDeteciton = new TriangleDetection(_picture);
+                    _triangleDeteciton.Detect(ColorParam);
+                    Bitmap = _triangleDeteciton.OriginalBitmap;
+                    PreBitmap = _triangleDeteciton.CustomImage;
+                });
+                await task;
+            }
+            else
+            {
+                var task = Task.Run(() =>
+                {
+                    Bitmap = _picture.Bitmap;
+                    PreBitmap = null;
+                });
+            }
+        }
+
         private bool CanTriangleDetect(object ob)
         {
             return _picture != null;
