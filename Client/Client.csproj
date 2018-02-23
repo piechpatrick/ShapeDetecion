@@ -65,6 +65,9 @@
     </ApplicationDefinition>
     <Compile Include="BindableBase.cs" />
     <Compile Include="Convertres\BitmapToImageSourceConverter.cs" />
+    <Compile Include="Detectors\ColoredTriangleDetector.cs" />
+    <Compile Include="Detectors\ISpecificTriangleDetector.cs" />
+    <Compile Include="Detectors\ITriangleDetector.cs" />
     <Compile Include="Models\ColorParam.cs" />
     <Compile Include="Models\IPicture.cs" />
     <Compile Include="Models\Picture.cs" />

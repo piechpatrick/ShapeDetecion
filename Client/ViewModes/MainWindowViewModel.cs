@@ -1,4 +1,5 @@
-﻿using Client.Models;
+﻿using Client.Detectors;
+using Client.Models;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -15,7 +16,6 @@ namespace Client.ViewModes
     {
 
         private RelayCommand _loadImageCommand;
-        private RelayCommand _triangleDetectionCommand;
         private RelayCommand _specificColorTriangleDetectionCommad;
 
         private TriangleDetection _triangleDeteciton;
@@ -24,7 +24,6 @@ namespace Client.ViewModes
 
 
         public ICommand LoadImageCommand { get { return _loadImageCommand; } }
-        public ICommand TriangleDetectionCommand { get { return _triangleDetectionCommand; } }
         public ICommand SpecificColorTriangleDetectionCommand { get { return _specificColorTriangleDetectionCommad; } }
 
         private Bitmap _bitmap;
@@ -39,20 +38,6 @@ namespace Client.ViewModes
                 SetProperty(ref _bitmap, value);
             }
         }
-
-        private Bitmap _prebitmap;
-        public Bitmap PreBitmap
-        {
-            get
-            {
-                return _prebitmap;
-            }
-            set
-            {
-                SetProperty(ref _prebitmap, value);
-            }
-        }
-
 
         private bool _isTriangleDetetcionChecked;
         public bool IsTriangleDetecionChecked
@@ -111,7 +96,6 @@ namespace Client.ViewModes
         public MainWindowViewModel()
         {
             _loadImageCommand = new RelayCommand(LoadImage, CanLoadImage);
-            _triangleDetectionCommand = new RelayCommand(TriangleDetection, CanTriangleDetect);
             _specificColorTriangleDetectionCommad = new RelayCommand(SpecificColorTriangleDetection, CanTriangleDetect);
         }
 
@@ -124,11 +108,10 @@ namespace Client.ViewModes
                 if (openFileDialog.ShowDialog() == true && openFileDialog.CheckPathExists)
                 {
                     _picture = new Picture(openFileDialog.FileName);
-                    Bitmap = _picture.Bitmap;
+                    Bitmap = _picture.Image.Bitmap;
                     Path = openFileDialog.FileName;
                     IsTriangleDetecionChecked = false;
                 }
-                _triangleDetectionCommand.RaiseCanExecuteChanged();
                 _specificColorTriangleDetectionCommad.RaiseCanExecuteChanged();
             });
             await task;
@@ -138,38 +121,22 @@ namespace Client.ViewModes
             return true;
         }
 
-        private async void TriangleDetection(object ob)
-        {
-            if(IsTriangleDetecionChecked)
-            {
-                var task = Task.Factory.StartNew(() =>
-                {
-                    _triangleDeteciton = new TriangleDetection(_picture);
-                    _triangleDeteciton.Detect();
-                });
-                await task;
-                Bitmap = _triangleDeteciton.OriginalBitmap;
-                PreBitmap = _triangleDeteciton.CustomImage;
-            }
-            else
-            {
-                var task = Task.Run(() =>
-                {
-                    Bitmap = _picture.Bitmap;
-                });
-            }
-        }
-
         private async void SpecificColorTriangleDetection(object ob)
         {
             if (IsSpecificColorTriangleDetecionChecked)
             {
+                ISpecificTriangleDetector specificTriangleDetector = new ColoredTriangleDetector()
+                {
+                    Color = ColorParam,
+                    Picture = new Picture(_picture),
+                };
+
                 var task = Task.Factory.StartNew(() =>
                 {
-                    _triangleDeteciton = new TriangleDetection(_picture);
-                    _triangleDeteciton.Detect(ColorParam);
-                    Bitmap = _triangleDeteciton.OriginalBitmap;
-                    PreBitmap = _triangleDeteciton.CustomImage;
+                    _triangleDeteciton = new TriangleDetection(specificTriangleDetector);
+                    _triangleDeteciton.Detect();
+                    _triangleDeteciton.Draw();
+                    Bitmap = _triangleDeteciton.Detector.Picture.Image.Bitmap;
                 });
                 await task;
             }
@@ -177,8 +144,7 @@ namespace Client.ViewModes
             {
                 var task = Task.Run(() =>
                 {
-                    Bitmap = _picture.Bitmap;
-                    PreBitmap = null;
+                    Bitmap = _picture.Image.Bitmap;
                 });
             }
         }

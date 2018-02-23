@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Emgu.CV;
+using Emgu.CV.Structure;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -9,21 +11,26 @@ namespace Client.Models
 {
     public class Picture : BindableBase, IPicture
     {
-        private Bitmap _bitmap;
-        public Bitmap Bitmap
+        private Image<Bgr,byte> _image;
+        public Image<Bgr, byte> Image
         {
             get
             {
-                return _bitmap;
+                return _image;
             }
             set
             {
-                SetProperty(ref _bitmap, value);
+                SetProperty(ref _image, value);
             }
         }
         public Picture(string path)
         {
-            _bitmap = new Bitmap(path);
+            _image = new Image<Bgr, byte>(path);
+        }
+
+        public Picture(IPicture picture)
+        {
+            _image = picture.Image;
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Emgu.CV;
+using Emgu.CV.Structure;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -9,6 +11,6 @@ namespace Client.Models
 {
     public interface IPicture
     {
-        Bitmap Bitmap { get; set; }
+        Image<Bgr,byte> Image { get; set; }
     }
 }

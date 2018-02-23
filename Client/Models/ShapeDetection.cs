@@ -11,25 +11,16 @@ namespace Client
     {
         protected Image<Bgr, Byte> _image;
 
-        protected Image<Bgr, Byte> _customImage;
-
         public Bitmap OriginalBitmap
         {
             get { return _image.Bitmap; }
         }
 
-        public Bitmap CustomImage
-        {
-            get { return _customImage.Bitmap; }
-            set { _customImage.Bitmap = value; }
-        }
-
         public ShapeDetection(IPicture picture)
         {
-            _image = new Image<Bgr, byte>(picture.Bitmap)
+            _image = picture.Image
             .Resize(650, 550, Emgu.CV.CvEnum.Inter.Linear, true);
-            _customImage = new Image<Bgr, byte>(picture.Bitmap)
-               .Resize(650, 550, Emgu.CV.CvEnum.Inter.Linear, true);
+            picture.Image = new Image<Bgr, byte>(_image.Bitmap);
         }
 
 
