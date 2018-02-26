@@ -47,20 +47,19 @@ namespace Client.Detectors
             //Blur & threshold image -->
             UMat blured = new UMat();
             UMat thresholeded = new UMat();
-            CvInvoke.Blur(image, blured, new Size(1, 1),new Point(1,1));
+            CvInvoke.Blur(image, blured, new Size(1, 1), new Point(1, 1));
             CvInvoke.Threshold(blured, thresholeded, 70.0f, 255, ThresholdType.Binary);
-      
+
             //founded triangles ordered by area -->
             Triangles = StaticTools.TrianglesHelper.GetTraingles(thresholeded).OrderBy(t => t.Area).ToList();
             return Triangles;
         }
 
-        
+
 
         public void Draw()
         {
             var drawOnMe = new Image<Bgr, byte>(Picture.Image.Bitmap);
-
             //heres our business logic for drawing 3 biggest triangles -->
             Triangles.Reverse();
 
@@ -93,11 +92,16 @@ namespace Client.Detectors
 
                     idx++;
                 }
-
-
-                //heres the solution for binding works -->
-                Picture.Image = drawOnMe;
             }
+            //less than 3 triangles warning --> 
+            else
+            {
+                CvInvoke.PutText(drawOnMe, "Cannot find at least 3 triangles ;)",
+                    new Point(50, drawOnMe.Height / 2), FontFace.HersheyComplex, 1,
+                    new Bgr(0x00, 0x00, 0xFF).MCvScalar, 1);
+            }
+            //heres the solution for binding works -->
+            Picture.Image = drawOnMe;
         }
     }
 }

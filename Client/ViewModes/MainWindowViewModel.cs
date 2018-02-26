@@ -50,19 +50,6 @@ namespace Client.ViewModes
         public ICommand LoadImageCommand { get { return _loadImageCommand; } }
         public ICommand SpecificColorTriangleDetectionCommand { get { return _specificColorTriangleDetectionCommad; } }
 
-        private bool _isTriangleDetetcionChecked;
-        public bool IsTriangleDetecionChecked
-        {
-            get
-            {
-                return _isTriangleDetetcionChecked;
-            }
-            set
-            {
-                SetProperty(ref _isTriangleDetetcionChecked, value);
-            }
-        }
-
         private bool _isSpecificColorTriangleDetecionChecked;
         public bool IsSpecificColorTriangleDetecionChecked
         {
@@ -120,7 +107,7 @@ namespace Client.ViewModes
                 {
                     OriginalPictureHost = new Picture(openFileDialog.FileName);
                     Path = openFileDialog.FileName;
-                    IsTriangleDetecionChecked = false;
+                    IsSpecificColorTriangleDetecionChecked = false;
 
                     //TO DO:
                     //that can be new EmptyTriangleDetector() object -->
