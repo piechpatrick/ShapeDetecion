@@ -20,37 +20,35 @@ namespace Client.ViewModes
 
         private TriangleDetection _triangleDeteciton;
 
-        private IPicture _picture;
+        private IPicture _originalPictureHost;
+        public IPicture OriginalPictureHost
+        {
+            get
+            {
+                return _originalPictureHost;
+            }
+            set
+            {
+                SetProperty(ref _originalPictureHost, value);
+            }
+        }
+
+        ISpecificTriangleDetector _specificTriangleDetector;
+        public ISpecificTriangleDetector SpecificTriangleDetector
+        {
+            get
+            {
+                return _specificTriangleDetector;
+            }
+            set
+            {
+                SetProperty(ref _specificTriangleDetector, value);
+            }
+        }
 
 
         public ICommand LoadImageCommand { get { return _loadImageCommand; } }
         public ICommand SpecificColorTriangleDetectionCommand { get { return _specificColorTriangleDetectionCommad; } }
-
-        private Bitmap _bitmap;
-        public Bitmap Bitmap
-        {
-            get
-            {
-                return _bitmap;
-            }
-            set
-            {
-                SetProperty(ref _bitmap, value);
-            }
-        }
-
-        private Bitmap _trainingBitmap;
-        public Bitmap TrainingBitmap
-        {
-            get
-            {
-                return _trainingBitmap;
-            }
-            set
-            {
-                SetProperty(ref _trainingBitmap, value);
-            }
-        }
 
         private bool _isTriangleDetetcionChecked;
         public bool IsTriangleDetecionChecked
@@ -120,11 +118,16 @@ namespace Client.ViewModes
                 openFileDialog.Filter = "PNG Files (*.png)|*.png|JPEG Files (*.jpeg)|*.jpeg|JPG Files (*.jpg)|";
                 if (openFileDialog.ShowDialog() == true && openFileDialog.CheckPathExists)
                 {
-                    _picture = new Picture(openFileDialog.FileName);
-                    Bitmap = _picture.Image.Bitmap;
-                    TrainingBitmap = _picture.TrainingImage.Bitmap;
+                    OriginalPictureHost = new Picture(openFileDialog.FileName);
                     Path = openFileDialog.FileName;
                     IsTriangleDetecionChecked = false;
+
+                    //TO DO:
+                    //that can be new EmptyTriangleDetector() object -->
+                    SpecificTriangleDetector = new ColoredTriangleDetector()
+                    {
+                        Picture = new Picture(openFileDialog.FileName)
+                    };
                 }
                 _specificColorTriangleDetectionCommad.RaiseCanExecuteChanged();
             });
@@ -139,33 +142,34 @@ namespace Client.ViewModes
         {
             if (IsSpecificColorTriangleDetecionChecked)
             {
-                ISpecificTriangleDetector specificTriangleDetector = new ColoredTriangleDetector()
+                SpecificTriangleDetector = new ColoredTriangleDetector()
                 {
                     Color = ColorParam,
-                    Picture = new Picture(_picture),
+                    Picture = new Picture(OriginalPictureHost),
                 };
-                    var task = Task.Factory.StartNew(() =>
-                    {
-                        _triangleDeteciton = new TriangleDetection(specificTriangleDetector);
-                        _triangleDeteciton.Detect();
-                        _triangleDeteciton.Draw();
-                        Bitmap = _triangleDeteciton.Detector.Picture.Image.Bitmap;
-                        TrainingBitmap = _triangleDeteciton.Detector.Picture.TrainingImage.Bitmap;
+                var task = Task.Factory.StartNew(() =>
+                {
+                    _triangleDeteciton = new TriangleDetection(SpecificTriangleDetector);
+                    _triangleDeteciton.Detect();
+                    _triangleDeteciton.Draw();
                     });
-                    await task;               
+                await task;
             }
             else
             {
                 var task = Task.Run(() =>
                 {
-                    Bitmap = _picture.Image.Bitmap;
+                    SpecificTriangleDetector = new ColoredTriangleDetector()
+                    {
+                        Picture = new Picture(OriginalPictureHost)
+                    };
                 });
             }
         }
 
         private bool CanTriangleDetect(object ob)
         {
-            return _picture != null;
+            return SpecificTriangleDetector != null;
         }
 
     }

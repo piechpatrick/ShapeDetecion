@@ -12,11 +12,22 @@ using Emgu.CV.Util;
 
 namespace Client.Detectors
 {
-    public class ColoredTriangleDetector : ISpecificTriangleDetector
+    public class ColoredTriangleDetector : BindableBase, ISpecificTriangleDetector
     {
         public ColorParam Color { get; set; }
 
-        public IPicture Picture { get; set; }
+        private IPicture _picture;
+        public IPicture Picture
+        {
+            get
+            {
+                return _picture;
+            }
+            set
+            {
+                SetProperty(ref _picture, value);
+            }
+        }
 
         public List<Triangle2DF> Triangles { get; set; }
 
@@ -48,6 +59,8 @@ namespace Client.Detectors
 
         public void Draw()
         {
+            var drawOnMe = new Image<Bgr, byte>(Picture.Image.Bitmap);
+
             //heres our business logic for drawing 3 biggest triangles -->
             Triangles.Reverse();
 
@@ -66,20 +79,24 @@ namespace Client.Detectors
                 int idx = 1;
                 foreach (var triangle in tooked3)
                 {
-                    CvInvoke.Circle(Picture.Image, new Point((int)triangle.Centeroid.X, (int)triangle.Centeroid.Y),
+                    CvInvoke.Circle(drawOnMe, new Point((int)triangle.Centeroid.X, (int)triangle.Centeroid.Y),
                             StaticTools.TrianglesHelper.GetDiameter(triangle) / 2, new Bgr(System.Drawing.Color.Red).MCvScalar, 1);
 
 
-                    CvInvoke.PutText(Picture.Image, idx.ToString(),
+                    CvInvoke.PutText(drawOnMe, idx.ToString(),
                         new Point((int)triangle.Centeroid.X, (int)triangle.Centeroid.Y),
                             FontFace.HersheyComplex, 1, new Bgr(0x00, 0x00, 0xFF).MCvScalar, 3);
 
-                    CvInvoke.PutText(Picture.Image,"Area: " + triangle.Area.ToString(),
+                    CvInvoke.PutText(drawOnMe, "Area: " + triangle.Area.ToString(),
                         new Point((int)triangle.Centeroid.X, (int)triangle.Centeroid.Y + 30),
                             FontFace.HersheyComplex, 0.3, new Bgr(0x93, 0x14, 0xFF).MCvScalar, 1);
 
                     idx++;
                 }
+
+
+                //heres the solution for binding works -->
+                Picture.Image = drawOnMe;
             }
         }
     }

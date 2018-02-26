@@ -23,7 +23,7 @@
         </Grid.RowDefinitions>
         <TextBlock Text="{Binding Path}" VerticalAlignment="Top"/>
         <Button Command="{Binding LoadImageCommand}" Content="..." Width="20" VerticalAlignment="Top" HorizontalAlignment="Right"/>
-        <Image Grid.Row="1" Grid.RowSpan="3" Source="{Binding Bitmap, Converter={StaticResource bitmapToImageSourceConv}}"
+        <Image Grid.Row="1" Grid.RowSpan="3" Source="{Binding Path=SpecificTriangleDetector.Picture.Image.Bitmap, Converter={StaticResource bitmapToImageSourceConv}}"
                        Stretch="Uniform"/>
         <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Vertical">
             <Expander IsExpanded="True" Header="Shape Detection: " Margin="5,5,5,5">
