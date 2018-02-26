@@ -39,6 +39,19 @@ namespace Client.ViewModes
             }
         }
 
+        private Bitmap _trainingBitmap;
+        public Bitmap TrainingBitmap
+        {
+            get
+            {
+                return _trainingBitmap;
+            }
+            set
+            {
+                SetProperty(ref _trainingBitmap, value);
+            }
+        }
+
         private bool _isTriangleDetetcionChecked;
         public bool IsTriangleDetecionChecked
         {
@@ -109,6 +122,7 @@ namespace Client.ViewModes
                 {
                     _picture = new Picture(openFileDialog.FileName);
                     Bitmap = _picture.Image.Bitmap;
+                    TrainingBitmap = _picture.TrainingImage.Bitmap;
                     Path = openFileDialog.FileName;
                     IsTriangleDetecionChecked = false;
                 }
@@ -130,15 +144,15 @@ namespace Client.ViewModes
                     Color = ColorParam,
                     Picture = new Picture(_picture),
                 };
-
-                var task = Task.Factory.StartNew(() =>
-                {
-                    _triangleDeteciton = new TriangleDetection(specificTriangleDetector);
-                    _triangleDeteciton.Detect();
-                    _triangleDeteciton.Draw();
-                    Bitmap = _triangleDeteciton.Detector.Picture.Image.Bitmap;
-                });
-                await task;
+                    var task = Task.Factory.StartNew(() =>
+                    {
+                        _triangleDeteciton = new TriangleDetection(specificTriangleDetector);
+                        _triangleDeteciton.Detect();
+                        _triangleDeteciton.Draw();
+                        Bitmap = _triangleDeteciton.Detector.Picture.Image.Bitmap;
+                        TrainingBitmap = _triangleDeteciton.Detector.Picture.TrainingImage.Bitmap;
+                    });
+                    await task;               
             }
             else
             {

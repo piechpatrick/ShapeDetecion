@@ -23,9 +23,23 @@ namespace Client.Models
                 SetProperty(ref _image, value);
             }
         }
+        private Image<Bgr, byte> _trainingimage;
+        public Image<Bgr, byte> TrainingImage
+        {
+            get
+            {
+                return _trainingimage;
+            }
+            set
+            {
+                SetProperty(ref _trainingimage, value);
+            }
+        }
+
         public Picture(string path)
         {
             _image = new Image<Bgr, byte>(path);
+            _trainingimage = new Image<Bgr, byte>(path);
         }
 
         public Picture(IPicture picture)

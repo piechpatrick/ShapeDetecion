@@ -20,7 +20,9 @@ namespace Client
         {
             _image = picture.Image
             .Resize(650, 550, Emgu.CV.CvEnum.Inter.Linear, true);
+
             picture.Image = new Image<Bgr, byte>(_image.Bitmap);
+            picture.TrainingImage = new Image<Bgr, byte>(_image.Bitmap);
         }
 
 

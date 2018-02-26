@@ -12,5 +12,6 @@ namespace Client.Models
     public interface IPicture
     {
         Image<Bgr,byte> Image { get; set; }
+        Image<Bgr,byte> TrainingImage { get; set; }
     }
 }

@@ -74,6 +74,7 @@
     <Compile Include="Models\ShapeDetection.cs" />
     <Compile Include="Models\TriangleDetection.cs" />
     <Compile Include="RelayCommand.cs" />
+    <Compile Include="StaticTools\TrianglesHelper.cs" />
     <Compile Include="ViewModes\MainWindowViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
